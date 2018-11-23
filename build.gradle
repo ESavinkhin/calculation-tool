@@ -1,0 +1,101 @@
+import java.text.SimpleDateFormat
+
+buildscript {
+    ext {
+        springBootVersion = '2.0.1.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+    }
+}
+
+static def getCI(name) {
+    def value = System.getenv(name)
+    return value == null ? "unknown" : value
+}
+
+static def getCurrentTimestamp() {
+    Date today = new Date()
+    SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss")
+    return df.format(today)
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'io.spring.dependency-management'
+
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+
+    group = 'ru.sberbank.tool'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = 1.8
+
+    dependencyManagement {
+        dependencies {
+            dependency 'com.greghaskins:spectrum:1.2.0'
+            dependency 'ch.qos.logback:logback-classic:1.2.3'
+            dependency 'com.google.guava:guava:22.0'
+            dependency 'org.slf4j:slf4j-api:1.7.7'
+            dependency 'junit:junit:4.12'
+            dependency 'org.apache.commons:commons-lang3:3.5'
+        }
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    javadoc {
+        options.addStringOption('encoding', 'UTF-8')
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+
+
+    repositories {
+        mavenCentral()
+    }
+
+    jar {
+        manifest {
+            attributes(
+                    "Git-Commit": getCI('CI_COMMIT_SHA'),
+                    "Build-Time": getCurrentTimestamp(),
+                    "Build-Number": getCI('CI_PIPELINE_ID')
+            )
+        }
+    }
+
+    dependencies {
+        compile('ch.qos.logback:logback-classic')
+        compile('org.slf4j:slf4j-api')
+        compile("com.google.guava:guava")
+        compile("org.apache.commons:commons-lang3")
+
+        testCompile 'junit:junit'
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: project.property("mavenRepository.url")) {
+                    authentication(userName: project.property("mavenDeployer.username"), password: project.property("mavenDeployer.password"))
+                }
+            }
+        }
+    }
+}
