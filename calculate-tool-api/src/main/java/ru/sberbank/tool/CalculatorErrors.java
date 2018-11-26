@@ -9,14 +9,15 @@ public enum CalculatorErrors {
     // не найденна стратегия для мержа
     NOT_FOUND_STRATEGY("JTE-01", "message1"),
     //Ошибка
-    MERGE_ERROR("JTE-02", "message2 %s  details [%s]"),
+    CALCULATOR_ERROR("JTE-02", "message2 %s  details [%s]"),
     // comment
     NOT_FOUND_STOCK("JTE-03", "not found stock %s"),
     // comment
     NOT_FOUND_OPERATION("JTE-04", "not found operation %s"),
     //comment
-    NOT_IMPLEMENT("JTE-00", "Not implement")
-    ;
+    NOT_IMPLEMENT("JTE-00", "Not implement"),
+    //comment
+    NOT_EXISTS_FILE("JTE-05", "File is not exists");
 
     private String message;
     private String code;
@@ -31,7 +32,7 @@ public enum CalculatorErrors {
             return args.length == 0 ? new CalculatorException(this, message) : new CalculatorException(this, String.format(message, (Object[]) args));
         } catch (MissingFormatArgumentException e) {
             e.printStackTrace();
-            return  new CalculatorException(this, message);
+            return new CalculatorException(this, message);
         }
     }
 

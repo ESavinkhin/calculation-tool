@@ -10,5 +10,5 @@ import java.io.File;
  * Интерфейс сервиса вычесления заказаов для клиентов
  */
 public interface CalculateService {
-    File calculateClient(File clientFile, File orderFile);
+    void calculateClient(File clientFile, File orderFile, File outputFile);
 }

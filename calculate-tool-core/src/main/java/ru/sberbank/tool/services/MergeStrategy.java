@@ -4,6 +4,7 @@ import ru.sberbank.tool.model.Client;
 import ru.sberbank.tool.model.Order;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -16,7 +17,7 @@ public interface MergeStrategy {
      * @param orderStream заказы
      * @return stream клиентов
      */
-    Stream<Client> merge(Stream<Client> clientStream, Stream<Order> orderStream);
+    List<Client> merge(List<Client> clientStream, List<Order> orderStream);
 
     /**
      * Проверка применимости стратегии

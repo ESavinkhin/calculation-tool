@@ -19,9 +19,9 @@ public class CalculatorErrorsTest {
 
     @Test
     public void createException() {
-        CalculatorException ex = CalculatorErrors.MERGE_ERROR.error();
+        CalculatorException ex = CalculatorErrors.CALCULATOR_ERROR.error();
         Assert.assertNotNull(ex);
-        ex = CalculatorErrors.MERGE_ERROR.error("test");
+        ex = CalculatorErrors.CALCULATOR_ERROR.error("test");
         Assert.assertNotNull(ex);
     }
 }

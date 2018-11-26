@@ -13,8 +13,14 @@ import ru.sberbank.tool.model.StockType;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 
 public class CalculateServiceImplTest {
+    @Test
+    public void checkExists() throws Exception {
+        new MergeServiceImpl().checkExists(new File(this.getClass().getResource("clients.txt").toURI()));
+    }
+
     @Test
     public void calculate() {
         Client client = new Client("client1", 10, Maps.immutableEnumMap(ImmutableMap.of(
@@ -35,41 +41,53 @@ public class CalculateServiceImplTest {
 
     @Test
     public void mergeClient() throws Exception {
-        File output = new MergeServiceImpl().calculateClient(
-                new File(this.getClass().getResource("clients.txt").toURI()),
-                new File(this.getClass().getResource("orders.txt").toURI())
-        );
+        File output = File.createTempFile("test", "output");
+        File client = new File(this.getClass().getResource("clients.txt").toURI());
+        File order = new File(this.getClass().getResource("orders.txt").toURI());
+
+        new MergeServiceImpl().calculateClient(
+                client,
+                order,
+                output);
 
         Assert.assertTrue(output.isFile());
 
-        List<String> list =  Files.readAllLines(output.toPath());
+        List<String> list = Files.readAllLines(output.toPath());
         System.out.println(Joiner.on("\n").join(list));
         Assert.assertEquals(9, list.size());
         Client c1 = Fixtures.parseClient(list.get(0));
         Assert.assertEquals("C1", c1.getId());
-        Assert.assertEquals(11516, c1.getBudget());
-        Assert.assertEquals(7, c1.getStocks().get(StockType.A).intValue());
-        Assert.assertEquals(118, c1.getStocks().get(StockType.B).intValue());
-        Assert.assertEquals(-2339 , c1.getStocks().get(StockType.C).intValue());
-        Assert.assertEquals(170 , c1.getStocks().get(StockType.D).intValue());
+        Assert.assertEquals(9064, c1.getBudget());
+        Assert.assertEquals(4, c1.getStocks().get(StockType.A).intValue());
+        Assert.assertEquals(-110, c1.getStocks().get(StockType.B).intValue());
+        Assert.assertEquals(-1064, c1.getStocks().get(StockType.C).intValue());
+        Assert.assertEquals(-59, c1.getStocks().get(StockType.D).intValue());
 
 
         Client c2 = Fixtures.parseClient(list.get(1));
         Assert.assertEquals("C2", c2.getId());
-        Assert.assertEquals(6855, c2.getBudget());
-        Assert.assertEquals(651, c2.getStocks().get(StockType.A).intValue());
-        Assert.assertEquals(1356, c2.getStocks().get(StockType.B).intValue());
-        Assert.assertEquals(-1741 , c2.getStocks().get(StockType.C).intValue());
-        Assert.assertEquals(1219 , c2.getStocks().get(StockType.D).intValue());
+        Assert.assertEquals(7519, c2.getBudget());
+        Assert.assertEquals(296, c2.getStocks().get(StockType.A).intValue());
+        Assert.assertEquals(386, c2.getStocks().get(StockType.B).intValue());
+        Assert.assertEquals(142, c2.getStocks().get(StockType.C).intValue());
+        Assert.assertEquals(318, c2.getStocks().get(StockType.D).intValue());
 
 
         Client c9 = Fixtures.parseClient(list.get(8));
         Assert.assertEquals("C9", c9.getId());
-        Assert.assertEquals(-17325, c9.getBudget());
-        Assert.assertEquals(2035, c9.getStocks().get(StockType.A).intValue());
-        Assert.assertEquals(2177, c9.getStocks().get(StockType.B).intValue());
-        Assert.assertEquals(2409 , c9.getStocks().get(StockType.C).intValue());
-        Assert.assertEquals(2290 , c9.getStocks().get(StockType.D).intValue());
+        Assert.assertEquals(-7177, c9.getBudget());
+        Assert.assertEquals(1691, c9.getStocks().get(StockType.A).intValue());
+        Assert.assertEquals(601, c9.getStocks().get(StockType.B).intValue());
+        Assert.assertEquals(2478, c9.getStocks().get(StockType.C).intValue());
+        Assert.assertEquals(730, c9.getStocks().get(StockType.D).intValue());
 
+        Integer preSum = Files.lines(client.toPath())
+                .map(Fixtures::parseClient)
+                .flatMap(c -> c.getStocks().entrySet().stream())
+                .mapToInt(Map.Entry::getValue).sum();
+
+        Integer postSum = list.stream().map(Fixtures::parseClient).flatMap(c -> c.getStocks().entrySet().stream()).mapToInt(Map.Entry::getValue).sum();
+
+        Assert.assertEquals("Count stock must be equal before and after operation",postSum, preSum); //контрольная проверка
     }
 }

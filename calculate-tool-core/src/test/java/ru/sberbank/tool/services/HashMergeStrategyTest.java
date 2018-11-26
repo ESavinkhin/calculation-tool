@@ -20,34 +20,37 @@ public class HashMergeStrategyTest {
 
     @Test
     public void merge() {
-        Stream<Client> clientStream = Stream.of(
+        List<Client> clientStream = Arrays.asList(
                 new Client("c1", 100, Collections.emptyMap()),
                 new Client("c2", 100, Collections.emptyMap()),
                 new Client("c3", 100, Collections.emptyMap()),
                 new Client("c4", 100, Collections.emptyMap())
         );
 
-        Stream<Order> orderStream = Stream.of(
+        List<Order> orderStream = Arrays.asList(
                 new Order("c1", Operation.BUY, StockType.A, 1, 1),
                 new Order("c1", Operation.BUY, StockType.B, 1, 2),
                 new Order("c1", Operation.BUY, StockType.C, 1, 3),
                 new Order("c1", Operation.BUY, StockType.C, 1, 4),
-                new Order("c2", Operation.SALE, StockType.D, 1, 5),
-                new Order("c4", Operation.SALE, StockType.D, 1, 6),
-                new Order("c4", Operation.BUY, StockType.B, 1, 7),
+
+                new Order("c2", Operation.SALE, StockType.A, 1, 1),
+
+                new Order("c4", Operation.SALE, StockType.C, 1, 3),
+                new Order("c4", Operation.SALE, StockType.C, 1, 4),
+
                 new Order("not_exists", Operation.BUY, StockType.B, 1, 7)
         );
-        Stream<Client> result = new HashMergeStrategy().merge(clientStream, orderStream);
+        List<Client> result = new HashMergeStrategy().merge(clientStream, orderStream);
         Assert.assertNotNull(result);
-        Map<String, Client> clients = result.collect(Collectors.toMap(Client::getId, Function.identity()));
+        Map<String, Client> clients = result.stream().collect(Collectors.toMap(Client::getId, Function.identity()));
         Assert.assertEquals(4, clients.size());
-        Assert.assertEquals(4, clients.get("c1").getOrders().size());
+        Assert.assertEquals(3, clients.get("c1").getOrders().size());
         Assert.assertEquals(1, clients.get("c2").getOrders().size());
         Assert.assertEquals(0, clients.get("c3").getOrders().size());
         Assert.assertEquals(2, clients.get("c4").getOrders().size());
-        Assert.assertEquals(4, clients.get("c1").getOrders().stream().filter(o->o.getOperation() == Operation.BUY).count());
-        Assert.assertEquals(1, clients.get("c4").getOrders().stream().filter(o->o.getOperation() == Operation.BUY).count());
-        Assert.assertEquals(13, clients.get("c4").getOrders().stream().mapToInt(Order::getPrice).sum());
+        Assert.assertEquals(3, clients.get("c1").getOrders().stream().filter(o->o.getOperation() == Operation.BUY).count());
+        Assert.assertEquals(2, clients.get("c4").getOrders().stream().filter(o->o.getOperation() == Operation.SALE).count());
+        Assert.assertEquals(7, clients.get("c4").getOrders().stream().mapToInt(Order::getPrice).sum());
     }
 
     @Test

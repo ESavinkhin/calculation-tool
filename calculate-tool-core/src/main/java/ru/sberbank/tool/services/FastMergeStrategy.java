@@ -4,7 +4,7 @@ import ru.sberbank.tool.CalculatorErrors;
 import ru.sberbank.tool.model.Client;
 import ru.sberbank.tool.model.Order;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Created by Egor Savinkhin on 22/11/2018.
@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 class FastMergeStrategy implements MergeStrategy {
 
     @Override
-    public Stream<Client> merge(Stream<Client> clientStream, Stream<Order> orderStream) {
+    public List<Client> merge(List<Client> clientStream, List<Order> orderStream) {
         /*
           1. сортируем списки
           2. за один проход в цикле соединяем элементы

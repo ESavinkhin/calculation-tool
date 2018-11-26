@@ -21,7 +21,13 @@ public enum Operation {
         return code;
     }
 
+    public Operation invert() {
+        return this == SALE ? BUY : SALE;
+    }
+
     public static Operation getByCode(String code) {
         return Arrays.stream(values()).filter(t -> t.getCode().equals(code)).findFirst().orElseThrow(() -> CalculatorErrors.NOT_FOUND_OPERATION.error(code));
     }
+
+
 }

@@ -4,6 +4,7 @@ import ru.sberbank.tool.CalculatorErrors;
 import ru.sberbank.tool.model.Client;
 import ru.sberbank.tool.model.Order;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -12,7 +13,7 @@ import java.util.stream.Stream;
 public class H2MergeStrategy implements MergeStrategy {
 
     @Override
-    public Stream<Client> merge(Stream<Client> clientStream, Stream<Order> orderStream) {
+    public List<Client> merge(List<Client> clientStream, List<Order> orderStream) {
         throw CalculatorErrors.NOT_IMPLEMENT.error();
     }
 
