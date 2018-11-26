@@ -17,7 +17,7 @@ public enum CalculatorErrors {
     //comment
     NOT_IMPLEMENT("JTE-00", "Not implement"),
     //comment
-    NOT_EXISTS_FILE("JTE-05", "File is not exists");
+    NOT_EXISTS_FILE("JTE-05", "File is not exists %s");
 
     private String message;
     private String code;

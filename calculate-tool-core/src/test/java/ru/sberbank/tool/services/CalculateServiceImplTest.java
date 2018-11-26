@@ -88,6 +88,6 @@ public class CalculateServiceImplTest {
 
         Integer postSum = list.stream().map(Fixtures::parseClient).flatMap(c -> c.getStocks().entrySet().stream()).mapToInt(Map.Entry::getValue).sum();
 
-        Assert.assertEquals("Count stock must be equal before and after operation",postSum, preSum); //контрольная проверка
+        Assert.assertEquals("Count stock must be equal before and after orders operation", postSum, preSum); //контрольная проверка
     }
 }
